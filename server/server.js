@@ -3,6 +3,7 @@ const http = require('http');
 const publicPath = path.join(__dirname,'../public');
 const socketIO = require('socket.io');
 const port = process.env.PORT || 3000;
+const {generateMessage} = require('./utils/message');
 
 var express = require('express');
 var app = express();
@@ -12,40 +13,12 @@ var io = socketIO(server);
 io.on('connection',(socket) =>{
 	console.log('New user connected'); 
 
-	// Welcome user when he connects to chat room
-	// Broadcasts to all other users new user joined
 
-	 
+	socket.broadcast.emit('newMessage',generateMessage('Admin','new user joined !'));
+    socket.emit('newMessage', generateMessage('Admin','Welcome to the chatroom '));
 	
-	var welcomeMessage = 'Welcome to the chatroom ' ;
-	var infoMessage = 'new user joined chatroom ';
-
-	socket.emit('newMessage',{
-			from: 'Admin',
-			text: welcomeMessage,
-			createdAt: new Date().getTime()
-	})
-
-	socket.broadcast.emit('newMessage',{
-		 	from: 'admin',
-		 	text: infoMessage,
-		 	createdAt: new Date().getTime()
-		 }) 
- 
-
 	socket.on('createMessage', (message) => {		
-		io.emit('newMessage',{
-			from: message.from,
-			text:message.text,
-			createdAt: new Date().getTime()
-		})
-	// socket.broadcast.emit('newMessage',{
-	// 	 	from: message.from,
-	// 	 	text:message.text,
-	// 	 	createdAt: new Date().getTime()
-	// 	 })
-	
-
+		io.emit('newMessage',generateMessage(message.from,message.text));			
 	});
 
 	socket.on('disconnect',(socket) =>{
