@@ -10,22 +10,42 @@ var server = http.createServer(app) ;
 var io = socketIO(server);
 
 io.on('connection',(socket) =>{
-	console.log('New user connected');
+	console.log('New user connected'); 
 
-	socket.emit('newEmail',{
-		from: 'jen@example.com',
-		text: 'New data came in ! ',
-		createdAt: 123
-	});
+	// Welcome user when he connects to chat room
+	// Broadcasts to all other users new user joined
+
+	 
+	
+	var welcomeMessage = 'Welcome to the chatroom ' ;
+	var infoMessage = 'new user joined chatroom ';
 
 	socket.emit('newMessage',{
-		from: 'admin@example.com',
-		text: 'New data came in ! ',
-		createdAt: 123
-	});
+			from: 'Admin',
+			text: welcomeMessage,
+			createdAt: new Date().getTime()
+	})
 
-	socket.on('createMessage', (newMessage) => {
-		console.log('createMessage',newMessage);
+	socket.broadcast.emit('newMessage',{
+		 	from: 'admin',
+		 	text: infoMessage,
+		 	createdAt: new Date().getTime()
+		 }) 
+ 
+
+	socket.on('createMessage', (message) => {		
+		io.emit('newMessage',{
+			from: message.from,
+			text:message.text,
+			createdAt: new Date().getTime()
+		})
+	// socket.broadcast.emit('newMessage',{
+	// 	 	from: message.from,
+	// 	 	text:message.text,
+	// 	 	createdAt: new Date().getTime()
+	// 	 })
+	
+
 	});
 
 	socket.on('disconnect',(socket) =>{
