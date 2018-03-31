@@ -8,8 +8,26 @@ var express = require('express');
 var app = express();
 var server = http.createServer(app) ;
 var io = socketIO(server);
+
 io.on('connection',(socket) =>{
 	console.log('New user connected');
+
+	socket.emit('newEmail',{
+		from: 'jen@example.com',
+		text: 'New data came in ! ',
+		createdAt: 123
+	});
+
+	socket.emit('newMessage',{
+		from: 'admin@example.com',
+		text: 'New data came in ! ',
+		createdAt: 123
+	});
+
+	socket.on('createMessage', (newMessage) => {
+		console.log('createMessage',newMessage);
+	});
+
 	socket.on('disconnect',(socket) =>{
 	console.log('Client disconnect !');
 	});
