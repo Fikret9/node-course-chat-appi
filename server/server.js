@@ -11,14 +11,13 @@ var server = http.createServer(app) ;
 var io = socketIO(server);
 
 io.on('connection',(socket) =>{
-	console.log('New user connected'); 
-
-
+	console.log('New user connected');  
 	socket.broadcast.emit('newMessage',generateMessage('Admin','new user joined !'));
     socket.emit('newMessage', generateMessage('Admin','Welcome to the chatroom '));
 	
-	socket.on('createMessage', (message) => {		
-		io.emit('newMessage',generateMessage(message.from,message.text));			
+	socket.on('createMessage', (message, callback) => {		
+		io.emit('newMessage',generateMessage(message.from,message.text));
+		callback('This is from the server');			
 	});
 
 	socket.on('disconnect',(socket) =>{
